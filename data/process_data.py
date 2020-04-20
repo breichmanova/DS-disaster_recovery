@@ -50,8 +50,9 @@ def clean_data(df):
     return df
 
 def save_data(df, database_filename):
-    engine = create_engine(f'sqlite:///{database_filename}')
-    df.to_sql('messages', engine, index=False)
+	engine = create_engine("sqlite:///{}".format(database_filename))
+	df.to_sql('messages', engine, index=False)
+	pass
 
 
 def main():
