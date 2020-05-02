@@ -2,7 +2,16 @@
 Project n.2 for Udacity Data Scientist Nanodegree.
 
 ### Description
-This application loads data from a SQLite database, transforms the data and finds the best model among the specified parameter combinations by GridSearch. Then this model is used in a Flask web-app, which consists of two parts - a dashboard with graphs and a message classifier.
+This application loads data from a CSV file, saves it in a SQLite database, transforms the data and finds the best model among the specified parameter combinations by GridSearch. Then this model is used in a Flask web-app, which consists of two parts - a dashboard with graphs and a message classifier.
+
+### Model pipeline
+In the ML pipeline I am using transformers: 
+* CountVectorizer with self-defined tokenize function 
+* TfidfTransformer
+
+and a classifier:
+* MultiOutputClassifier with DecisionTreeClassifier
+* GridSearchCV
 
 ### How to run
 * Process the data:
