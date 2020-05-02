@@ -1,6 +1,7 @@
 import json
 import plotly
 import pandas as pd
+import pickle
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
@@ -10,7 +11,6 @@ from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
-
 
 app = Flask(__name__)
 
@@ -27,10 +27,12 @@ def tokenize(text):
 
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
-df = pd.read_sql_table('messages', engine)
+df = pd.read_sql_table('messages', con = engine)
+
 
 # load model
-model = joblib.load("../models/classifier.pkl")
+# model = joblib.load("../models/classifier.pkl")
+model = pickle.load(open('../models/classifier.pkl', 'rb'))
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -42,10 +44,32 @@ def index():
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+    topic_names = df[4:].columns
+    topic_counts = df[4:].sum(axis = 0, skipna = True)
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
+        # Message Genres
+        {
+            'data': [
+                Bar(
+                    x=genre_names,
+                    y=genre_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Genres',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Genre"
+                }
+            }
+        },
+        # Message topics
         {
             'data': [
                 Bar(
@@ -82,7 +106,7 @@ def go():
 
     # use model to predict classification for query
     classification_labels = model.predict([query])[0]
-    classification_results = dict(zip(df.columns[4:], classification_labels))
+    classification_results = dict(zip(df.columns[5:], classification_labels))
 
     # This will render the go.html Please see that file. 
     return render_template(
